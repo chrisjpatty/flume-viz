@@ -29,6 +29,7 @@ export const Stage = (props: IStageProps) => {
           height = 0,
           x = 0,
           y = 0,
+          color = { h: 0, s: 100, l: 100, a: 1 },
           log,
         } = engine.resolveRootNode(nodes, {
           context: {
@@ -39,11 +40,14 @@ export const Stage = (props: IStageProps) => {
             stageHeight: SIZE / DPR,
           },
         }) as EngineOutput;
-        ctx.fillStyle = "#fff";
+
         if (log !== undefined) {
+          ctx.fillStyle = "#fff";
           ctx.font = `${12 / DPR}px sans-serif`;
-          ctx.fillText(log.toString(), 3, (SIZE - (13 * i) - 12) / DPR);
+          ctx.fillText(JSON.stringify(log).toString(), 3, (SIZE - (13 * i) - 12) / DPR);
         }
+
+        ctx.fillStyle = `HSLA(${color.h},${color.s}%,${color.l}%,${color.a})`;
         ctx.fillRect(x, y, width, height);
       }
     }

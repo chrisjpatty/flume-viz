@@ -42,7 +42,7 @@ function App() {
             {
               type: "output",
               x: 400,
-              y: -150,
+              y: -250,
             },
             {
               type: "tile",
