@@ -10,8 +10,6 @@ const getCache = <T extends any>(key: string, initial: T): T => {
     return cached !== null ? cached : initial;
 };
 
-type StateUpdater = (currentState: any) => any;
-
 const isFunction = (val: unknown): val is Function => typeof val === "function";
 
 export const useLocalStorage = <T extends any>(

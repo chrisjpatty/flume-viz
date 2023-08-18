@@ -10,15 +10,9 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { orderBy } from "lodash";
 import { defaultShaders } from "./defaultShaders";
 
-type ShaderFile = {
-  name: string;
-  nodes: any;
-  numParticles: number;
-};
-
 function App() {
   const [isEditing, setIsEditing] = React.useState(true);
-  const [files, { add: addFile, remove: removeFile, update: updateFile }] =
+  const [files, { add: addFile, update: updateFile }] =
     useFiler("shaders", defaultShaders);
   const { shaderId } = useParams();
   const navigate = useNavigate();
