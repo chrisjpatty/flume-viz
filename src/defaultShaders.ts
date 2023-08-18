@@ -654,7 +654,7 @@ export const defaultShaders = {
         },
       },
       numSquares: 400,
-      numFrames: 2000,
+      numFrames: 1000,
     },
   },
 };
