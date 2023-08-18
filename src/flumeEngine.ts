@@ -49,6 +49,8 @@ const resolveNodeTypes = (
       };
     case "exponent":
       return { result: Math.pow(inputValues.input, inputValues.exponent) };
+    case "sqrt":
+      return { result: Math.sqrt(inputValues.input) };
     case "sin":
       return { result: Math.sin(inputValues.input) };
     case "cos":
@@ -68,8 +70,11 @@ const resolveNodeTypes = (
         frameNumber: context.currentFrame,
         frameProgress: context.frameProgress,
       };
-    case "tile":
-      return { tileIndex: context.tileIndex };
+    case "particle":
+      return {
+        particleIndex: context.particleIndex,
+        numParticles: context.numParticles,
+      };
     case "hsla":
       return {
         color: {

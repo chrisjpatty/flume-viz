@@ -4,4 +4,20 @@
 
 body{
   background: rgba(0, 0, 0, 0.897);
+  overflow: hidden;
+  max-height: 100vh;
+}
+
+.shader-list li {
+  padding: 0px;
+}
+
+.shader-list a {
+  color: #fff;
+  text-decoration: none;
+}
+
+.shader-list a[data-selected="true"] {
+  font-weight: bold;
+  color: hsl(210, 70%, 60%);
 }

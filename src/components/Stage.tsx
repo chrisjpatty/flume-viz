@@ -5,11 +5,11 @@ import * as React from "react";
 interface IStageProps {
   nodes: any;
   numSquares: number;
+  numFrames: number;
 }
 
 const DPR = window.devicePixelRatio;
 const SIZE = 600;
-const NUM_FRAMES = 200;
 
 export const Stage = (props: IStageProps) => {
   const isInitialized = React.useRef(false);
@@ -22,7 +22,7 @@ export const Stage = (props: IStageProps) => {
     const ctx = canvasContext.current;
     if (ctx && propsRef.current?.nodes) {
       ctx.clearRect(0, 0, SIZE / DPR, SIZE / DPR);
-      const { nodes, numSquares = 0 } = propsRef.current;
+      const { nodes, numSquares = 0, numFrames = 200 } = propsRef.current;
       for (let i = 0; i < numSquares; i++) {
         const {
           width = 0,
@@ -34,8 +34,9 @@ export const Stage = (props: IStageProps) => {
         } = engine.resolveRootNode(nodes, {
           context: {
             currentFrame: frame.current,
-            frameProgress: frame.current / NUM_FRAMES,
-            tileIndex: i,
+            frameProgress: frame.current / numFrames,
+            particleIndex: i,
+            numParticles: numSquares,
             stageWidth: SIZE / DPR,
             stageHeight: SIZE / DPR,
           },
@@ -51,7 +52,7 @@ export const Stage = (props: IStageProps) => {
         ctx.fillRect(x, y, width, height);
       }
     }
-    frame.current = frame.current >= NUM_FRAMES ? 0 : frame.current + 1;
+    frame.current = frame.current >= (propsRef.current?.numFrames ?? 200) ? 0 : frame.current + 1;
     requestAnimationFrame(draw);
   }, []);
 

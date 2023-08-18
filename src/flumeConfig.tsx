@@ -56,7 +56,7 @@ config
   .addNodeType({
     type: "hsla",
     label: "HSLA",
-    initialWidth: 140,
+    initialWidth: 100,
     inputs: (ports: any) => [
       ports.number({ name: "h", label: "Hue", defaultValue: 0 }),
       ports.number({ name: "s", label: "Saturation", defaultValue: 50 }),
@@ -134,6 +134,17 @@ config
     ],
   })
   .addNodeType({
+    type: "sqrt",
+    label: "Square Root",
+    initialWidth: 140,
+    inputs: (ports: any) => [
+      ports.number({ name: "input", label: "Input" })
+    ],
+    outputs: (ports: any) => [
+      ports.number({ name: "result", label: "Result" }),
+    ],
+  })
+  .addNodeType({
     type: "sin",
     label: "Sine",
     initialWidth: 140,
@@ -197,11 +208,12 @@ config
     ],
   })
   .addNodeType({
-    type: "tile",
-    label: "Tile",
+    type: "particle",
+    label: "Particle",
     initialWidth: 140,
     outputs: (ports: any) => [
-      ports.number({ name: "tileIndex", label: "Tile Index" }),
+      ports.number({ name: "particleIndex", label: "Particle Index" }),
+      ports.number({ name: "numParticles", label: "Number of Particles" }),
     ],
   })
   .addNodeType({
@@ -231,7 +243,7 @@ config
   .addNodeType({
     type: "pi",
     label: "PI",
-    initialWidth: 140,
+    initialWidth: 60,
     outputs: (ports: any) => [
       ports.number({ name: "result", label: "PI" }),
     ],
@@ -239,7 +251,7 @@ config
   .addNodeType({
     type: "random",
     label: "Random",
-    initialWidth: 140,
+    initialWidth: 80,
     outputs: (ports: any) => [
       ports.number({ name: "result", label: "Random" }),
     ],
