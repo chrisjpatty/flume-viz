@@ -21,7 +21,7 @@ function App() {
 
   React.useEffect(() => {
     if (!currentShader) {
-      const defaultFile = orderBy(Object.values(files), "created")[0];
+      const defaultFile = orderBy(Object.values(files), "created", 'desc')[0];
 
       if (defaultFile) {
         navigate(`/${defaultFile.id}`);
