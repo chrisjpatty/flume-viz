@@ -29,6 +29,7 @@ function App() {
         const id = addFile({
           name: "Untitled Shader",
           nodes: undefined,
+          comments: undefined,
           numSquares: 25,
           numFrames: 200,
         });
@@ -45,6 +46,15 @@ function App() {
       updateFile(currentShader.id, (file: any) => ({
         ...file.data,
         nodes: newNodes,
+      }));
+    }
+  }, [updateFile, currentShader?.id]);
+
+  const setComments = React.useCallback((newComments: any) => {
+    if (currentShader?.id) {
+      updateFile(currentShader.id, (file: any) => ({
+        ...file.data,
+        comments: newComments,
       }));
     }
   }, [updateFile, currentShader?.id]);
@@ -80,6 +90,7 @@ function App() {
       numSquares: 25,
       numFrames: 200,
       nodes: undefined,
+      comments: undefined
     });
 
     setTimeout(() => {
@@ -162,7 +173,9 @@ function App() {
           portTypes={config.portTypes}
           nodeTypes={config.nodeTypes}
           onChange={setNodes}
+          onCommentsChange={setComments}
           nodes={currentShader.data.nodes}
+          comments={currentShader.data.comments}
           defaultNodes={[
             {
               type: "output",
