@@ -654,7 +654,7 @@ export const defaultShaders = {
         },
       },
       numSquares: 400,
-      numFrames: 1000,
+      numFrames: 350,
     },
   },
   tE8cpYrn: {
