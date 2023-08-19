@@ -68,7 +68,7 @@ export const useFiler = (localStorageKey: string, defaultShaders = {}) => {
         setFiles(({ [fileId]: deleted, ...newFiles }) => newFiles);
     };
 
-    const update = (fileId: string, data: any) => {
+    const update = React.useCallback((fileId: string, data: any) => {
         setFiles((files) => ({
             ...files,
             [fileId]: {
@@ -77,7 +77,7 @@ export const useFiler = (localStorageKey: string, defaultShaders = {}) => {
                 data: typeof data === "function" ? data(files[fileId]) : data,
             },
         }));
-    };
+    }, [setFiles]);
 
     const clear = () => {
         setFiles({});

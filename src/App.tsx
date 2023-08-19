@@ -40,6 +40,15 @@ function App() {
     }
   }, [currentShader, navigate, addFile, files]);
 
+  const setNodes = React.useCallback((newNodes: any) => {
+    if (currentShader?.id) {
+      updateFile(currentShader.id, (file: any) => ({
+        ...file.data,
+        nodes: newNodes,
+      }));
+    }
+  }, [updateFile, currentShader?.id]);
+
   if (!currentShader) {
     return <div>Loading...</div>;
   }
@@ -55,13 +64,6 @@ function App() {
     updateFile(currentShader.id, {
       ...currentShader.data,
       numFrames: newNumFrames,
-    });
-  };
-
-  const setNodes = (newNodes: any) => {
-    updateFile(currentShader.id, {
-      ...currentShader.data,
-      nodes: newNodes,
     });
   };
 
@@ -185,7 +187,6 @@ function App() {
           ]}
         />
       </EditorWrapper>
-      Î
     </div>
   );
 }
