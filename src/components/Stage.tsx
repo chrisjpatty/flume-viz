@@ -69,9 +69,16 @@ export const Stage = (props: IStageProps) => {
     propsRef.current = props;
   });
 
+  React.useEffect(() => {
+    // @ts-ignore next-line
+    window.getStageImage = () => {
+      return stage.current?.toDataURL();
+    }
+  }, [])
+
   return (
     <Wrapper>
-      <Canvas width={SIZE} height={SIZE} ref={stage}>
+      <Canvas width={SIZE} height={SIZE} ref={stage} id='stage'>
         Stage
       </Canvas>
     </Wrapper>
