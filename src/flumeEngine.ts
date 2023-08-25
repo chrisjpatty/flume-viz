@@ -1,7 +1,6 @@
 import Alea from "alea";
 import { config } from "./flumeConfig";
 import { RootEngine } from "flume";
-import tumult from "tumult";
 
 const remapValue = (
   value: number,
