@@ -1,7 +1,7 @@
 import React from "react";
 import "modern-css-reset";
 import "./App.css";
-import { Stage } from "./components/Stage";
+import { IStageHandle, Stage } from "./components/Stage";
 import { NodeEditor } from "flume";
 import { config } from "./flumeConfig";
 import styled from "@emotion/styled";
@@ -9,6 +9,7 @@ import { CrookFile, useFiler } from "./hooks";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { orderBy } from "lodash";
 import { defaultShaders } from "./defaultShaders";
+import GIF from 'gif.js'
 
 function App() {
   const [isEditing, setIsEditing] = React.useState(true);
@@ -16,6 +17,7 @@ function App() {
     useFiler("shaders", defaultShaders);
   const { shaderId } = useParams();
   const navigate = useNavigate();
+  const stageRef = React.useRef<IStageHandle>(null);
 
   const currentShader = files[shaderId ?? ""] as CrookFile | undefined;
 
@@ -32,6 +34,7 @@ function App() {
           comments: undefined,
           numSquares: 25,
           numFrames: 200,
+          frameRate: 60
         });
 
         setTimeout(() => {
@@ -70,6 +73,13 @@ function App() {
     });
   };
 
+  const setFrameRate = (newFrameRate: number) => {
+    updateFile(currentShader.id, {
+      ...currentShader.data,
+      frameRate: newFrameRate,
+    });
+  };
+
   const setNumFrames = (newNumFrames: number) => {
     updateFile(currentShader.id, {
       ...currentShader.data,
@@ -90,7 +100,8 @@ function App() {
       numSquares: 25,
       numFrames: 200,
       nodes: undefined,
-      comments: undefined
+      comments: undefined,
+      frameRate: 60
     });
 
     setTimeout(() => {
@@ -100,12 +111,42 @@ function App() {
 
   const orderedFiles = orderBy(Object.values(files), "created", "desc");
 
+  const exportGif = () => {
+    console.log("exporting gif")
+    const gif = new GIF({
+      workers: 2,
+      quality: 10,
+      workerScript: process.env.PUBLIC_URL + '/gif.worker.js',
+      // transparent: '#000000',
+      // background: '#00000000'
+    });
+
+    gif.on('finished', (blob) => {
+      window.open(URL.createObjectURL(blob));
+    })
+
+    gif.on("abort", () => {
+      console.log("aborted")
+    })
+
+    stageRef.current?.imperativelyDraw(
+      (canvas) => {
+        gif.addFrame(canvas, { delay: (1 / Math.min(currentShader.data.frameRate ?? 60, 60)) * 1000, copy: true });
+      },
+      () => {
+        gif.render();
+      }
+    )
+  }
+
   return (
     <div className="App">
       <Stage
         nodes={currentShader.data.nodes}
         numSquares={currentShader.data.numSquares}
         numFrames={currentShader.data.numFrames}
+        frameRate={currentShader.data.frameRate}
+        ref={stageRef}
       />
       {!isEditing ? (
         <CloseButton onClick={() => setIsEditing(true)}>
@@ -140,12 +181,22 @@ function App() {
             <ToolbarButton onClick={() => setIsEditing(false)}>
               Hide Editor
             </ToolbarButton>
+            <Divider />
             <Label>
               <span>Shader Name</span>
               <StyledInput
                 style={{ width: 120 }}
                 value={currentShader.data.name ?? "Untitled Shader"}
                 onChange={(e) => setName(e.target.value)}
+              />
+            </Label>
+            <Label>
+              <span>Frame Rate</span>
+              <StyledInput
+                style={{ width: 60 }}
+                type="number"
+                value={currentShader.data.frameRate ?? 60}
+                onChange={(e) => setFrameRate(Number(e.target.value))}
               />
             </Label>
             <Label>
@@ -166,6 +217,10 @@ function App() {
                 onChange={(e) => setNumSquares(Number(e.target.value))}
               />
             </Label>
+            <Divider />
+            <ToolbarButton onClick={exportGif}>
+              Export Gif
+            </ToolbarButton>
           </ControlsColumn>
         </Toolbar>
         <NodeEditor
@@ -246,6 +301,8 @@ const ToolbarButton = styled.button`
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  padding: 5px 10px;
+  align-self: stretch;
 
   &:hover {
     background: rgba(255, 255, 255, 0.4);
@@ -341,7 +398,6 @@ const ColumnTitle = styled.h3`
 
 const Divider = styled.div`
   width: 100%;
-  flex: 1;
   height: 1px;
   background: #888;
   margin: 10px 0px;

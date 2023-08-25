@@ -14,7 +14,20 @@ config
     name: "any",
     label: "Any",
     color: Colors.grey,
-    acceptTypes: ["number", "any", "hsla"],
+    acceptTypes: ["number", "any", "hsla", "string"],
+  })
+  .addPortType({
+    type: "string",
+    name: "string",
+    label: "String",
+    color: Colors.green,
+    controls: [
+      Controls.text({
+        label: "String",
+        name: "string",
+        defaultValue: "",
+      })
+    ]
   })
   .addPortType({
     type: "hsla",
@@ -25,33 +38,25 @@ config
       Controls.number({
         label: "Hue",
         name: "h",
-        min: 0,
-        max: 359,
         defaultValue: 0,
       }),
       Controls.number({
         label: "Saturation",
         name: "s",
-        min: 0,
-        max: 100,
         defaultValue: 50,
       }),
       Controls.number({
         label: "Lightness",
         name: "l",
-        min: 0,
-        max: 100,
         defaultValue: 100,
       }),
       Controls.number({
         label: "Alpha",
         name: "a",
-        min: 0,
-        max: 1,
         defaultValue: 1,
       }),
     ],
-    acceptsTypes: ["hsla"],
+    acceptTypes: ["hsla"],
   })
   .addNodeType({
     type: "hsla",
@@ -199,6 +204,19 @@ config
     ],
   })
   .addNodeType({
+    type: "clamp",
+    label: "Clamp",
+    initialWidth: 140,
+    inputs: (ports: any) => [
+      ports.number({ name: "input", label: "Input" }),
+      ports.number({ name: "min", label: "Min" }),
+      ports.number({ name: "max", label: "Max" }),
+    ],
+    outputs: (ports: any) => [
+      ports.number({ name: "result", label: "Result" }),
+    ],
+  })
+  .addNodeType({
     type: "frame",
     label: "Frame Data",
     initialWidth: 140,
@@ -251,7 +269,10 @@ config
   .addNodeType({
     type: "random",
     label: "Random",
-    initialWidth: 80,
+    initialWidth: 100,
+    inputs: (ports: any) => [
+      ports.number({ name: "seed", label: "Seed (optional)" }),
+    ],
     outputs: (ports: any) => [
       ports.number({ name: "result", label: "Random" }),
     ],

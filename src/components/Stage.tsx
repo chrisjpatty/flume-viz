@@ -6,20 +6,39 @@ interface IStageProps {
   nodes: any;
   numSquares: number;
   numFrames: number;
+  frameRate: number;
 }
 
 const DPR = window.devicePixelRatio;
 const SIZE = 600;
 
-export const Stage = (props: IStageProps) => {
+type ImperativeDraw = (onFrame: (canvas: HTMLCanvasElement) => void, onDone: () => void) => void;
+export interface IStageHandle {
+  imperativelyDraw: ImperativeDraw;
+}
+
+export const Stage = React.forwardRef<IStageHandle, IStageProps>((props, handleRef) => {
   const isInitialized = React.useRef(false);
   const stage = React.useRef<HTMLCanvasElement>(null);
   const propsRef = React.useRef<IStageProps>();
   const canvasContext = React.useRef<CanvasRenderingContext2D | null>();
   const frame = React.useRef<number>(0);
+  const animationLoop = React.useRef<number | null>(null);
+  const [isRendering, setIsRendering] = React.useState(false);
+  const isRenderingRef = React.useRef(isRendering);
+  const lastFrameTime = React.useRef<number>(performance.now());
 
-  const draw = React.useCallback(() => {
+  const draw = React.useCallback((currentTime: number) => {
     const ctx = canvasContext.current;
+
+    const timePerFrame = 1000 / (propsRef.current?.frameRate ?? 60);
+    const deltaTime = currentTime - lastFrameTime.current;
+
+    if (!isRenderingRef.current && deltaTime < timePerFrame) {
+      animationLoop.current = requestAnimationFrame(draw);
+      return;
+    }
+
     if (ctx && propsRef.current?.nodes) {
       ctx.clearRect(0, 0, SIZE / DPR, SIZE / DPR);
       const { nodes, numSquares = 0, numFrames = 200 } = propsRef.current;
@@ -52,9 +71,35 @@ export const Stage = (props: IStageProps) => {
         ctx.fillRect(x, y, width, height);
       }
     }
-    frame.current = frame.current >= (propsRef.current?.numFrames ?? 200) ? 0 : frame.current + 1;
-    requestAnimationFrame(draw);
+    if (!isRenderingRef.current) {
+      frame.current = frame.current >= (propsRef.current?.numFrames ?? 200) ? 0 : frame.current + 1;
+      lastFrameTime.current = currentTime;
+      animationLoop.current = requestAnimationFrame(draw);
+    }
   }, []);
+
+  const imperativelyDraw: ImperativeDraw = (onFrame, onDone) => {
+    setIsRendering(true);
+    isRenderingRef.current = true;
+
+    const ctx = canvasContext.current;
+
+    if (ctx) {
+      frame.current = 0;
+      for (props.numFrames; frame.current < props.numFrames; frame.current++) {
+        draw(performance.now());
+        onFrame(stage.current!);
+      }
+    }
+
+    setIsRendering(false);
+    isRenderingRef.current = false;
+    onDone();
+  }
+
+  React.useImperativeHandle(handleRef, () => ({
+    imperativelyDraw,
+  }));
 
   React.useEffect(() => {
     canvasContext.current = stage.current?.getContext("2d");
@@ -62,8 +107,16 @@ export const Stage = (props: IStageProps) => {
       canvasContext.current.scale(DPR, DPR);
       isInitialized.current = true;
     }
-    requestAnimationFrame(draw);
-  }, [draw]);
+    if (!isRendering) {
+      animationLoop.current = requestAnimationFrame(draw);
+    }
+
+    return () => {
+      if (animationLoop.current) {
+        cancelAnimationFrame(animationLoop.current);
+      }
+    }
+  }, [draw, isRendering]);
 
   React.useEffect(() => {
     propsRef.current = props;
@@ -83,7 +136,7 @@ export const Stage = (props: IStageProps) => {
       </Canvas>
     </Wrapper>
   );
-};
+});
 
 const Wrapper = styled.div`
   display: flex;

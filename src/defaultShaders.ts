@@ -654,7 +654,8 @@ export const defaultShaders = {
         },
       },
       numSquares: 400,
-      numFrames: 350,
+      numFrames: 150,
+      frameRate: 60,
     },
   },
   tE8cpYrn: {
@@ -664,7 +665,8 @@ export const defaultShaders = {
     data: {
       name: "Wobbler",
       numSquares: 10,
-      numFrames: 350,
+      numFrames: 120,
+      frameRate: 100,
       nodes: {
         QsIlbJCvPw: {
           x: 525.187255859375,

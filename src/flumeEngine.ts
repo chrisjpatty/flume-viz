@@ -1,5 +1,7 @@
+import Alea from "alea";
 import { config } from "./flumeConfig";
 import { RootEngine } from "flume";
+import tumult from "tumult";
 
 const remapValue = (
   value: number,
@@ -22,6 +24,8 @@ const resolvePortTypes = (portType: string, data: any) => {
       return data.any;
     case "hsla":
       return data.hsla;
+    case "string":
+      return data.string;
     default:
       return data;
   }
@@ -96,8 +100,17 @@ const resolveNodeTypes = (
       };
     case "pi":
       return { result: Math.PI };
+    case "clamp":
+      return {
+        result: Math.min(
+          Math.max(inputValues.input, inputValues.min),
+          inputValues.max
+        ),
+      };
     case "random":
-      return { result: Math.random() };
+      const seed = inputValues.seed || undefined;
+      const random = seed ? Alea(seed) : Math.random;
+      return { result: random() };
     default:
       return {};
   }
